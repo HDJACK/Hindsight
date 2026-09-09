@@ -1,0 +1,58 @@
+<Page x:Class="Hindsight.App.Pages.LivePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:controls="clr-namespace:Hindsight.App.Controls"
+      Title="Live"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <Grid Margin="24,8,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="300" MinHeight="260" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <ui:Button x:Name="OpenSavedButton" DockPanel.Dock="Right" Content="Open" Icon="{ui:SymbolIcon FolderOpen24}" Margin="8,0,0,8" Visibility="Collapsed" Click="OpenSaved_Click" />
+            <ui:InfoBar x:Name="RecInfo" IsOpen="False" IsClosable="True" Margin="0,0,0,8" />
+        </DockPanel>
+
+        <UniformGrid Grid.Row="1" Rows="1" Columns="4">
+            <controls:StatCard x:Name="CpuCard" Title="CPU" />
+            <controls:StatCard x:Name="GpuCard" Title="GPU" />
+            <controls:StatCard x:Name="IoCard" Title="File I/O" />
+            <controls:StatCard x:Name="RamCard" Title="RAM available" />
+        </UniformGrid>
+
+        <UniformGrid x:Name="SecondaryCards" Grid.Row="2" Rows="1" Columns="4" Margin="0,8,0,0">
+            <controls:StatCard x:Name="NetCard" Title="Network" />
+            <controls:StatCard x:Name="CpuMhzCard" Title="CPU MHz" />
+            <controls:StatCard x:Name="DiskLatencyCard" Title="Disk latency" />
+            <controls:StatCard x:Name="CommitCard" Title="Commit % / Battery" />
+        </UniformGrid>
+
+        <DockPanel Grid.Row="3" Margin="0,12,0,8">
+            <TextBlock x:Name="BufferText" DockPanel.Dock="Right" VerticalAlignment="Center"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            <StackPanel Orientation="Horizontal">
+                <ui:TextBox x:Name="MarkerText" Width="200" PlaceholderText="Marker note (optional)" />
+                <ui:Button Margin="8,0,0,0" Content="Add marker" Icon="{ui:SymbolIcon Flag24}" Click="AddMarker_Click" />
+                <Rectangle Width="1" Margin="16,4" Fill="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                <ui:TextBox x:Name="RecordingName" Width="200" PlaceholderText="Recording name" />
+                <ui:Button x:Name="RecordButton" Margin="8,0,0,0" Content="Start recording" Icon="{ui:SymbolIcon Play24}" Appearance="Primary" Click="Record_Click" />
+                <ui:Button x:Name="SaveBufferButton" Margin="8,0,0,0" Content="Save last 30 min" Icon="{ui:SymbolIcon Save24}" Click="SaveBuffer_Click" />
+            </StackPanel>
+        </DockPanel>
+
+        <DockPanel Grid.Row="4" Margin="0,0,0,4">
+            <controls:TimelineToolbar x:Name="Toolbar" DockPanel.Dock="Right" />
+            <controls:LaneStrip x:Name="Lanes" />
+        </DockPanel>
+        <controls:TimelineControl x:Name="Timeline" Grid.Row="5" MinHeight="220" />
+        <controls:AnalysisTabs x:Name="Tabs" Grid.Row="6" Margin="0,8,0,0" />
+    </Grid>
+</Page>

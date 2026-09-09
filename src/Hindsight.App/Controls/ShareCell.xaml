@@ -1,0 +1,14 @@
+<UserControl x:Class="Hindsight.App.Controls.ShareCell"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Value, ElementName=Root}"
+                     Height="6" VerticalAlignment="Center" Margin="0,0,6,0" />
+        <TextBlock Grid.Column="1" Text="{Binding Text, ElementName=Root}" MinWidth="54" TextAlignment="Right" />
+    </Grid>
+</UserControl>

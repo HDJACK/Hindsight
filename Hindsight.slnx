@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Hindsight.App/Hindsight.App.csproj" />
+    <Project Path="src/Hindsight.Core/Hindsight.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Hindsight.Core.Tests/Hindsight.Core.Tests.csproj" />
+  </Folder>
+</Solution>

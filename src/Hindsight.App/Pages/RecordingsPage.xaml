@@ -1,0 +1,50 @@
+<Page x:Class="Hindsight.App.Pages.RecordingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Recordings"
+      ScrollViewer.CanContentScroll="True"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <Grid Margin="24,8,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" FontSize="28" FontWeight="SemiBold" Text="Recordings" Margin="0,0,0,8" />
+        <ui:InfoBar x:Name="Info" Grid.Row="1" IsOpen="False" IsClosable="True" Margin="0,0,0,8" />
+        <ui:Card Grid.Row="2" Padding="16" Margin="0,0,0,12">
+            <DockPanel>
+                <TextBlock x:Name="RecStatus" DockPanel.Dock="Right" VerticalAlignment="Center" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Not recording" />
+                <StackPanel Orientation="Horizontal">
+                    <ui:TextBox x:Name="RecordingName" Width="240" PlaceholderText="Recording name" />
+                    <ui:TextBox x:Name="RecordingNotes" Width="240" Margin="8,0,0,0" PlaceholderText="Notes (optional)" />
+                    <ui:Button x:Name="RecordButton" Margin="8,0,0,0" Content="Start recording" Icon="{ui:SymbolIcon Play24}" Appearance="Primary" Click="Record_Click" />
+                    <ui:Button x:Name="SaveBufferButton" Margin="8,0,0,0" Content="Save last 30 min" Icon="{ui:SymbolIcon Save24}" Click="SaveBuffer_Click" />
+                </StackPanel>
+            </DockPanel>
+        </ui:Card>
+        <WrapPanel Grid.Row="3" Margin="0,0,0,8">
+            <ui:Button x:Name="OpenButton" Content="Open" Icon="{ui:SymbolIcon FolderOpen24}" Appearance="Primary" Click="Open_Click" Margin="0,0,8,4" />
+            <ui:TextBox x:Name="RenameBox" Width="200" PlaceholderText="New name" Margin="0,0,4,4" />
+            <ui:Button x:Name="RenameButton" Content="Rename" Icon="{ui:SymbolIcon Rename24}" Click="Rename_Click" Margin="0,0,8,4" />
+            <ui:Button x:Name="DeleteButton" Content="Delete" Icon="{ui:SymbolIcon DeleteDismiss24}" Click="Delete_Click" Margin="0,0,8,4" />
+            <ui:Button x:Name="ExportTicksButton" Content="Export ticks CSV" Icon="{ui:SymbolIcon ArrowExport24}" Click="ExportTicks_Click" Margin="0,0,8,4" />
+            <ui:Button x:Name="ExportProcessesButton" Content="Export processes CSV" Click="ExportProcesses_Click" Margin="0,0,8,4" />
+            <ui:Button x:Name="ExportJsonButton" Content="Export JSON" Click="ExportJson_Click" Margin="0,0,8,4" />
+            <ui:Button x:Name="CompareButton" Content="Compare (select two)" Click="Compare_Click" Margin="0,0,8,4" />
+            <ui:Button Content="Refresh" Click="Refresh_Click" Margin="0,0,8,4" />
+            <TextBlock x:Name="FolderText" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+        </WrapPanel>
+        <DataGrid x:Name="RecordingsGrid" Grid.Row="4" MinHeight="200" MaxHeight="600" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Extended"
+                  CanUserAddRows="False" GridLinesVisibility="None" HeadersVisibility="Column" SelectionChanged="Grid_SelectionChanged"
+                  MouseDoubleClick="Grid_MouseDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="260" />
+                <DataGridTextColumn Header="Started" Binding="{Binding Started}" Width="160" />
+                <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="110" />
+                <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="90" />
+                <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>

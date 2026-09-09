@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\hindsight.ico</ApplicationIcon>
+    <RootNamespace>Hindsight.App</RootNamespace>
+    <AssemblyTitle>Hindsight</AssemblyTitle>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Diagnostics.EventLog" Version="8.0.2" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+    <PackageReference Include="WPF-UI.Tray" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\hindsight.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hindsight.Core\Hindsight.Core.csproj" />
+  </ItemGroup>
+</Project>

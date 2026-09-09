@@ -1,0 +1,71 @@
+<ui:FluentWindow x:Class="Hindsight.App.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:pages="clr-namespace:Hindsight.App.Pages"
+    Title="Hindsight" Width="1200" Height="720" MinWidth="1000" MinHeight="640"
+    WindowStartupLocation="CenterScreen"
+    ExtendsContentIntoTitleBar="True" WindowBackdropType="Mica" WindowCornerPreference="Round">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="Hindsight">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="pack://application:,,,/Assets/hindsight.ico" />
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+
+        <ui:InfoBar x:Name="GlobalInfo" Grid.Row="1" Margin="16,0,16,0" IsOpen="False" IsClosable="True" />
+
+        <ui:NavigationView x:Name="RootNavigation" Grid.Row="2"
+                           PaneDisplayMode="Top" IsBackButtonVisible="Collapsed" IsPaneToggleVisible="False">
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="Live" NavigationCacheMode="Enabled" TargetPageType="{x:Type pages:LivePage}">
+                    <ui:NavigationViewItem.Icon>
+                        <!-- SymbolRegular has no "Pulse24"; PulseSquare24 is the closest match in Wpf.Ui.dll's Fluent icon set. -->
+                        <ui:SymbolIcon Symbol="PulseSquare24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Recordings" NavigationCacheMode="Enabled" TargetPageType="{x:Type pages:RecordingsPage}">
+                    <ui:NavigationViewItem.Icon>
+                        <!-- SymbolRegular has no "Record24"; RecordStop24 is the closest recording glyph available. -->
+                        <ui:SymbolIcon Symbol="RecordStop24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content="Analysis" NavigationCacheMode="Enabled" TargetPageType="{x:Type pages:AnalysisPage}">
+                    <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="DataTrending24" /></ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.MenuItems>
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem Content="Settings" NavigationCacheMode="Enabled" TargetPageType="{x:Type pages:SettingsPage}">
+                    <ui:NavigationViewItem.Icon>
+                        <!-- SymbolRegular has no "Settings24" (the gear icon is named "Options" in this Fluent set). -->
+                        <ui:SymbolIcon Symbol="Options24" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView.FooterMenuItems>
+        </ui:NavigationView>
+
+        <Border Grid.Row="3" Padding="16,6" BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}">
+            <DockPanel>
+                <TextBlock x:Name="TickText" DockPanel.Dock="Right" VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <TextBlock x:Name="RecText" DockPanel.Dock="Right" Margin="0,0,16,0" VerticalAlignment="Center"
+                           Foreground="OrangeRed" FontWeight="SemiBold" Visibility="Collapsed" Text="● REC" />
+                <ui:Button x:Name="ThemeButton" DockPanel.Dock="Right" Margin="0,0,12,0" Padding="8,2"
+                           Appearance="Secondary" Click="ThemeButton_Click"
+                           ToolTip="Cycle theme: System → Light → Dark" />
+                <ui:Button x:Name="LevelButton" DockPanel.Dock="Right" Margin="0,0,12,0" Padding="8,2"
+                           Appearance="Secondary" Click="LevelButton_Click"
+                           ToolTip="Switch between Easy and Professional detail level" />
+                <TextBlock x:Name="StatusText" VerticalAlignment="Center" Text="Starting…" />
+            </DockPanel>
+        </Border>
+    </Grid>
+</ui:FluentWindow>

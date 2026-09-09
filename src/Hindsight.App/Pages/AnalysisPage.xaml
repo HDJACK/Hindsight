@@ -1,0 +1,36 @@
+<Page x:Class="Hindsight.App.Pages.AnalysisPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:controls="clr-namespace:Hindsight.App.Controls"
+      Title="Analysis"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <Grid Margin="24,8,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Margin="0,0,0,8">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <ui:Button Content="Live buffer" Icon="{ui:SymbolIcon PulseSquare24}" Click="Live_Click" Margin="0,0,8,0" />
+                <ui:Button Content="Open recording…" Icon="{ui:SymbolIcon FolderOpen24}" Click="OpenFile_Click" />
+            </StackPanel>
+            <StackPanel>
+                <TextBlock x:Name="SourceTitle" FontSize="22" FontWeight="SemiBold" Text="Live buffer" />
+                <TextBlock x:Name="MetaText" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+        </DockPanel>
+        <ui:InfoBar x:Name="Info" Grid.Row="1" IsOpen="False" IsClosable="True" Margin="0,0,0,8" />
+        <Grid x:Name="AnalysisGrid" Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="300" MinHeight="260" />
+            </Grid.RowDefinitions>
+            <DockPanel Grid.Row="0" Margin="0,0,0,4">
+                <controls:TimelineToolbar x:Name="Toolbar" DockPanel.Dock="Right" />
+                <controls:LaneStrip x:Name="Lanes" />
+            </DockPanel>
+            <controls:TimelineControl x:Name="Timeline" Grid.Row="1" MinHeight="220" />
+            <controls:AnalysisTabs x:Name="Tabs" Grid.Row="2" Margin="0,8,0,0" />
+        </Grid>
+        <controls:CompareView x:Name="Compare" Grid.Row="2" Visibility="Collapsed" />
+    </Grid>
+</Page>

@@ -1,0 +1,274 @@
+<UserControl x:Class="Hindsight.App.Controls.AnalysisTabs"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:controls="clr-namespace:Hindsight.App.Controls">
+    <UserControl.Resources>
+        <!-- WPF-UI 4.3.0 styles only its own ui:ListView, so a plain WPF ListView keeps the system theme and its
+             dark foreground stays unreadable on the dark background. BasedOn cannot help: the library's style
+             targets the derived Wpf.Ui.Controls.ListViewItem. Column headers do have a plain-typed style
+             (UiGridViewColumnHeaderStyle) that follows the theme, so the GridViews below opt into it. -->
+        <Style x:Key="ThemedListViewItem" TargetType="ListViewItem">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+        <ItemsPanelTemplate x:Key="SummaryPanel">
+            <WrapPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+        <DataTemplate x:Key="SummaryTile">
+            <Border Margin="0,0,12,8" Padding="12,8" MinWidth="140" CornerRadius="6"
+                    Background="{DynamicResource ControlFillColorDefaultBrush}">
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}" FontSize="11"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Text="{Binding Value}" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Detail}" FontSize="11" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <!-- One share cell (bar + right-aligned text) per metric, shared by the Overview and Range grids so the
+             two column sets stay identical. Each binds the row's 0-100 share and its pre-formatted text. -->
+        <DataTemplate x:Key="ShareCellCpu">
+            <controls:ShareCell Value="{Binding Cpu, Mode=OneWay}" Text="{Binding CpuText}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ShareCellGpu">
+            <controls:ShareCell Value="{Binding Gpu, Mode=OneWay}" Text="{Binding GpuText}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ShareCellIo">
+            <controls:ShareCell Value="{Binding Io, Mode=OneWay}" Text="{Binding IoText}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ShareCellDisk">
+            <controls:ShareCell Value="{Binding Disk, Mode=OneWay}" Text="{Binding DiskText}" />
+        </DataTemplate>
+        <DataTemplate x:Key="ShareCellNet">
+            <controls:ShareCell Value="{Binding Net, Mode=OneWay}" Text="{Binding NetText}" />
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <TabControl x:Name="Tabs">
+        <TabItem x:Name="TabSecond" Header="Second">
+            <controls:CulpritsPanel x:Name="SecondPanel" Margin="0,8,0,0" />
+        </TabItem>
+
+        <TabItem x:Name="TabOverview" Header="Overview">
+            <DockPanel Margin="0,8,0,0">
+                <ItemsControl x:Name="OverviewSummary" DockPanel.Dock="Top"
+                              ItemsPanel="{StaticResource SummaryPanel}"
+                              ItemTemplate="{StaticResource SummaryTile}" />
+                <TextBlock x:Name="OverviewEmpty" DockPanel.Dock="Top" Margin="0,8,0,0" Visibility="Collapsed"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           Text="No data in this recording yet." />
+                <DataGrid x:Name="OverviewGrid" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                          CanUserAddRows="False" CanUserSortColumns="True" GridLinesVisibility="None"
+                          BorderThickness="0" Background="Transparent" MouseDoubleClick="OverviewGrid_MouseDoubleClick">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Process" Binding="{Binding Process}" SortMemberPath="Process" Width="200" />
+                        <DataGridTemplateColumn Header="CPU" Width="140" SortMemberPath="Cpu" CellTemplate="{StaticResource ShareCellCpu}" />
+                        <DataGridTemplateColumn Header="GPU" Width="140" SortMemberPath="Gpu" CellTemplate="{StaticResource ShareCellGpu}" />
+                        <DataGridTemplateColumn Header="File I/O" Width="140" SortMemberPath="Io" CellTemplate="{StaticResource ShareCellIo}" />
+                        <DataGridTemplateColumn x:Name="OverviewColDisk" Header="Disk (phys)" Width="140" SortMemberPath="Disk" CellTemplate="{StaticResource ShareCellDisk}" />
+                        <DataGridTemplateColumn x:Name="OverviewColNet" Header="Network" Width="140" SortMemberPath="Net" CellTemplate="{StaticResource ShareCellNet}" />
+                        <DataGridTextColumn x:Name="OverviewColScore" Header="Score" Binding="{Binding Score}" SortMemberPath="ScoreValue" Width="70" />
+                        <DataGridTextColumn Header="Seconds" Binding="{Binding Seconds}" SortMemberPath="SecondsValue" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
+
+        <TabItem x:Name="TabRange" Header="Range">
+            <DockPanel Margin="0,8,0,0">
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                    <ui:Button DockPanel.Dock="Right" Content="Use view as range"
+                               Icon="{ui:SymbolIcon Ruler24}" Click="UseView_Click" />
+                    <TextBlock x:Name="RangeTitle" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,8,0"
+                               Text="Shift+drag in the timeline to select a range, or" />
+                </DockPanel>
+                <ItemsControl x:Name="RangeSummaryItems" DockPanel.Dock="Top"
+                              ItemsPanel="{StaticResource SummaryPanel}"
+                              ItemTemplate="{StaticResource SummaryTile}" />
+                <DataGrid x:Name="RangeGrid" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                          CanUserAddRows="False" CanUserSortColumns="True" GridLinesVisibility="None"
+                          BorderThickness="0" Background="Transparent" MouseDoubleClick="RangeGrid_MouseDoubleClick">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Process" Binding="{Binding Process}" SortMemberPath="Process" Width="200" />
+                        <DataGridTemplateColumn Header="CPU" Width="140" SortMemberPath="Cpu" CellTemplate="{StaticResource ShareCellCpu}" />
+                        <DataGridTemplateColumn Header="GPU" Width="140" SortMemberPath="Gpu" CellTemplate="{StaticResource ShareCellGpu}" />
+                        <DataGridTemplateColumn Header="File I/O" Width="140" SortMemberPath="Io" CellTemplate="{StaticResource ShareCellIo}" />
+                        <DataGridTemplateColumn Header="Disk (phys)" Width="140" SortMemberPath="Disk" CellTemplate="{StaticResource ShareCellDisk}" />
+                        <DataGridTemplateColumn Header="Network" Width="140" SortMemberPath="Net" CellTemplate="{StaticResource ShareCellNet}" />
+                        <DataGridTextColumn Header="Score" Binding="{Binding Score}" SortMemberPath="ScoreValue" Width="70" />
+                        <DataGridTextColumn Header="Seconds" Binding="{Binding Seconds}" SortMemberPath="SecondsValue" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
+
+        <TabItem x:Name="TabAnomalies" Header="Anomalies">
+            <DockPanel Margin="0,8,0,0">
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                    <ProgressBar x:Name="Busy" DockPanel.Dock="Left" IsIndeterminate="True" Width="90" Height="4"
+                                 VerticalAlignment="Center" Margin="0,0,12,0" Visibility="Collapsed" />
+                    <CheckBox x:Name="OnlyHigh" DockPanel.Dock="Right" Content="Only high severity"
+                              VerticalAlignment="Center" Checked="Filter_Changed" Unchecked="Filter_Changed" />
+                    <WrapPanel x:Name="MetricFilters" Orientation="Horizontal" />
+                </DockPanel>
+                <Expander x:Name="ContributorsExpander" DockPanel.Dock="Bottom" Header="Explain" IsExpanded="True" Margin="0,8,0,0">
+                    <StackPanel>
+                        <DataGrid x:Name="ContributorsGrid" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                                  CanUserAddRows="False" GridLinesVisibility="None" BorderThickness="0"
+                                  Background="Transparent" MaxHeight="150">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Process" Binding="{Binding Process}" Width="200" />
+                                <DataGridTextColumn Header="Share" Binding="{Binding Share}" Width="80" />
+                                <DataGridTextColumn Header="Now" Binding="{Binding Value}" Width="110" />
+                                <DataGridTextColumn Header="Baseline" Binding="{Binding Baseline}" Width="110" />
+                                <DataGridTextColumn Header="Δ" Binding="{Binding Delta}" Width="110" />
+                                <DataGridTextColumn Header="Parent chain" Binding="{Binding ParentChain}" Width="220" />
+                                <DataGridTextColumn Header="Command line" Binding="{Binding CommandLine}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock x:Name="ContextText" TextWrapping="Wrap" Margin="0,6,0,0"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Expander>
+                <Grid>
+                    <ListView x:Name="AnomalyList" SelectionMode="Single" BorderThickness="0" Background="Transparent"
+                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                              ItemContainerStyle="{StaticResource ThemedListViewItem}"
+                              SelectionChanged="AnomalyList_SelectionChanged">
+                        <ListView.View>
+                            <GridView x:Name="AnomalyGridView" ColumnHeaderContainerStyle="{StaticResource UiGridViewColumnHeaderStyle}">
+                                <GridViewColumn Header="Severity" Width="80"
+                                                DisplayMemberBinding="{Binding Severity}" />
+                                <GridViewColumn Header="Metric" Width="100"
+                                                DisplayMemberBinding="{Binding Metric}" />
+                                <GridViewColumn Header="Time" Width="90"
+                                                DisplayMemberBinding="{Binding Time}" />
+                                <GridViewColumn Header="Duration" Width="90"
+                                                DisplayMemberBinding="{Binding Duration}" />
+                                <GridViewColumn x:Name="ColPeak" Header="Peak" Width="110"
+                                                DisplayMemberBinding="{Binding Peak}" />
+                                <GridViewColumn x:Name="ColBaseline" Header="Baseline" Width="110"
+                                                DisplayMemberBinding="{Binding Baseline}" />
+                                <GridViewColumn Header="What happened" Width="420">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Sentence}" ToolTip="{Binding TopContributor}"
+                                                       TextTrimming="CharacterEllipsis" MaxWidth="400" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <TextBlock x:Name="AnomalyEmpty" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="No anomalies found." />
+                </Grid>
+            </DockPanel>
+        </TabItem>
+
+        <TabItem x:Name="TabProcess" Header="Process">
+            <Grid Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="260" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <DockPanel Grid.Column="0" Margin="0,0,12,0">
+                    <ui:TextBox x:Name="ProcessSearch" DockPanel.Dock="Top" PlaceholderText="Process name…"
+                                Margin="0,0,0,6" TextChanged="ProcessSearch_TextChanged" />
+                    <ui:Button DockPanel.Dock="Bottom" Content="Clear overlay"
+                               Margin="0,6,0,0" HorizontalAlignment="Stretch" Click="ClearOverlay_Click" />
+                    <ListBox x:Name="ProcessMatches" DisplayMemberPath="Display" BorderThickness="0"
+                             Background="Transparent" SelectionChanged="ProcessMatches_SelectionChanged" />
+                </DockPanel>
+                <ui:Card Grid.Column="1" Padding="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock x:Name="ProcessEmpty" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Text="Pick a process to see its details." />
+                            <ItemsControl x:Name="ProcessFacts">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="150" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Label}"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock x:Name="ProcessAnomalies" TextWrapping="Wrap" Margin="0,10,0,0" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </ui:Card>
+            </Grid>
+        </TabItem>
+
+        <TabItem x:Name="TabContext" Header="Context">
+            <DockPanel Margin="0,8,0,0">
+                <TextBlock x:Name="ContextHeader" DockPanel.Dock="Top" FontWeight="SemiBold" Margin="0,0,0,8"
+                           TextWrapping="Wrap" Text="Select a second and a process." />
+                <Grid>
+                    <Grid x:Name="ContextLists">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <DockPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock DockPanel.Dock="Top" Text="DNS names" Margin="0,0,0,4"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <ListView x:Name="DnsList" BorderThickness="0" Background="Transparent"
+                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                      ItemContainerStyle="{StaticResource ThemedListViewItem}">
+                                <ListView.View>
+                                    <GridView ColumnHeaderContainerStyle="{StaticResource UiGridViewColumnHeaderStyle}">
+                                        <GridViewColumn Header="Name" Width="200" DisplayMemberBinding="{Binding Key}" />
+                                        <GridViewColumn Header="Lookups" Width="70" DisplayMemberBinding="{Binding Value}" />
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </DockPanel>
+                        <DockPanel Grid.Column="1" Margin="0,0,8,0">
+                            <TextBlock DockPanel.Dock="Top" Text="Endpoints" Margin="0,0,0,4"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <ListView x:Name="EndpointList" BorderThickness="0" Background="Transparent"
+                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                      ItemContainerStyle="{StaticResource ThemedListViewItem}">
+                                <ListView.View>
+                                    <GridView ColumnHeaderContainerStyle="{StaticResource UiGridViewColumnHeaderStyle}">
+                                        <GridViewColumn Header="Endpoint" Width="200" DisplayMemberBinding="{Binding Key}" />
+                                        <GridViewColumn Header="Bytes" Width="80" DisplayMemberBinding="{Binding Value}" />
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </DockPanel>
+                        <DockPanel Grid.Column="2">
+                            <TextBlock DockPanel.Dock="Top" Text="Files" Margin="0,0,0,4"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <ListView x:Name="FileList" BorderThickness="0" Background="Transparent"
+                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                      ItemContainerStyle="{StaticResource ThemedListViewItem}">
+                                <ListView.View>
+                                    <GridView ColumnHeaderContainerStyle="{StaticResource UiGridViewColumnHeaderStyle}">
+                                        <GridViewColumn Header="Path" Width="260" DisplayMemberBinding="{Binding Key}" />
+                                        <GridViewColumn Header="Bytes" Width="80" DisplayMemberBinding="{Binding Value}" />
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </DockPanel>
+                    </Grid>
+                    <TextBlock x:Name="ContextEmpty" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               TextWrapping="Wrap" Visibility="Collapsed"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Text="No context recorded for this process in this minute." />
+                </Grid>
+            </DockPanel>
+        </TabItem>
+    </TabControl>
+</UserControl>

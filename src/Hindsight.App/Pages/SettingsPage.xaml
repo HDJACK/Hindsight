@@ -1,0 +1,157 @@
+<Page x:Class="Hindsight.App.Pages.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="Settings"
+      ScrollViewer.CanContentScroll="True"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+        <StackPanel Margin="24" MaxWidth="900" HorizontalAlignment="Left">
+            <TextBlock FontSize="28" FontWeight="SemiBold" Text="Settings" Margin="0,0,0,12" />
+            <ui:InfoBar x:Name="Info" IsOpen="False" IsClosable="True" Margin="0,0,0,12" />
+
+            <ui:Card Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Recording" Margin="0,0,0,4" />
+                    <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12"
+                               Text="Changing these restarts the recording pipeline. The buffer is cleared." />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" /><ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Buffer length (minutes)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="0" Grid.Column="1" x:Name="BufferMinutes" Minimum="5" Maximum="180" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="1" Text="Sample interval (seconds)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="1" Grid.Column="1" x:Name="Interval" Minimum="1" Maximum="5" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="2" Text="Data folder" VerticalAlignment="Center" />
+                        <DockPanel Grid.Row="2" Grid.Column="1" Margin="0,4">
+                            <ui:Button DockPanel.Dock="Right" Content="Browse…" Margin="8,0,0,0" Click="Browse_Click" />
+                            <ui:TextBox x:Name="DataFolder" />
+                        </DockPanel>
+                    </Grid>
+                    <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,12,0,4"
+                               Text="Capture (applies immediately, no restart)" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" /><ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Capture file paths" VerticalAlignment="Center" />
+                        <ui:ToggleSwitch Grid.Row="0" Grid.Column="1" x:Name="CapturePaths" Margin="0,4" OnContent="On" OffContent="Off" />
+                        <TextBlock Grid.Row="1" Text="Capture DNS names and endpoints" VerticalAlignment="Center" />
+                        <ui:ToggleSwitch Grid.Row="1" Grid.Column="1" x:Name="CaptureDns" Margin="0,4" OnContent="On" OffContent="Off" />
+                    </Grid>
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="Detection" Margin="0,0,0,12" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" /><ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="CPU spike threshold (%)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="0" Grid.Column="1" x:Name="CpuSpike" Minimum="10" Maximum="100" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="1" Text="File I/O spike (MB/s)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="1" Grid.Column="1" x:Name="IoSpike" Minimum="1" Maximum="5000" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="2" Text="Network spike (MB/s)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="2" Grid.Column="1" x:Name="NetSpike" Minimum="0.1" Maximum="5000" SmallChange="0.1" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="3" Text="Baseline window (seconds)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="3" Grid.Column="1" x:Name="Baseline" Minimum="30" Maximum="1800" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="4" Text="GPU spike threshold (%)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="4" Grid.Column="1" x:Name="GpuSpike" Minimum="10" Maximum="100" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="5" Text="Disk latency spike (ms)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="5" Grid.Column="1" x:Name="LatencySpike" Minimum="1" Maximum="5000" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="6" Text="Commit (memory pressure) spike (%)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="6" Grid.Column="1" x:Name="CommitSpike" Minimum="50" Maximum="100" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <TextBlock Grid.Row="7" Text="Anomaly sensitivity" VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="7" Grid.Column="1" x:Name="Sensitivity" Width="180" HorizontalAlignment="Left" Margin="0,4">
+                            <ComboBoxItem Content="Low" /><ComboBoxItem Content="Normal" /><ComboBoxItem Content="High" />
+                        </ComboBox>
+                        <TextBlock Grid.Row="8" Text="Minimum anomaly duration (s)" VerticalAlignment="Center" />
+                        <ui:NumberBox Grid.Row="8" Grid.Column="1" x:Name="MinAnomaly" Minimum="1" Maximum="60" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        <Grid Grid.Row="9" Grid.ColumnSpan="2" x:Name="WCpuRow">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="220" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="Ranking weight: CPU" VerticalAlignment="Center" />
+                            <ui:NumberBox Grid.Column="1" x:Name="WCpu" Minimum="0" Maximum="10" SmallChange="0.5" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        </Grid>
+                        <Grid Grid.Row="10" Grid.ColumnSpan="2" x:Name="WIoRow">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="220" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="Ranking weight: File I/O" VerticalAlignment="Center" />
+                            <ui:NumberBox Grid.Column="1" x:Name="WIo" Minimum="0" Maximum="10" SmallChange="0.5" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        </Grid>
+                        <Grid Grid.Row="11" Grid.ColumnSpan="2" x:Name="WNetRow">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="220" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="Ranking weight: Network" VerticalAlignment="Center" />
+                            <ui:NumberBox Grid.Column="1" x:Name="WNet" Minimum="0" Maximum="10" SmallChange="0.5" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        </Grid>
+                        <Grid Grid.Row="12" Grid.ColumnSpan="2" x:Name="WMemRow">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="220" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="Ranking weight: Memory" VerticalAlignment="Center" />
+                            <ui:NumberBox Grid.Column="1" x:Name="WMem" Minimum="0" Maximum="10" SmallChange="0.5" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        </Grid>
+                        <Grid Grid.Row="13" Grid.ColumnSpan="2" x:Name="WGpuRow">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="220" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="Ranking weight: GPU" VerticalAlignment="Center" />
+                            <ui:NumberBox Grid.Column="1" x:Name="WGpu" Minimum="0" Maximum="10" SmallChange="0.5" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+            </ui:Card>
+
+            <ui:Card Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="General" Margin="0,0,0,12" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" /><ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Marker hotkey" VerticalAlignment="Center" />
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,4"><ui:TextBox x:Name="Hotkey" Width="180" IsReadOnly="True" PlaceholderText="Click, then press keys" PreviewKeyDown="Hotkey_PreviewKeyDown" /><TextBlock Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Click the box and press the combination (e.g. Ctrl+Alt+M), then Apply." /></StackPanel>
+                        <TextBlock Grid.Row="1" Text="Start with Windows" VerticalAlignment="Center" />
+                        <ui:ToggleSwitch Grid.Row="1" Grid.Column="1" x:Name="Autostart" Margin="0,4" OnContent="On" OffContent="Off" />
+                        <TextBlock Grid.Row="2" Text="Theme" VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="Theme" Width="180" HorizontalAlignment="Left" Margin="0,4">
+                            <ComboBoxItem Content="System" /><ComboBoxItem Content="Light" /><ComboBoxItem Content="Dark" />
+                        </ComboBox>
+                        <TextBlock Grid.Row="3" Text="Store command lines" VerticalAlignment="Center" />
+                        <ui:ToggleSwitch Grid.Row="3" Grid.Column="1" x:Name="StoreCmd" Margin="0,4" OnContent="On" OffContent="Off" />
+                        <TextBlock Grid.Row="4" Text="Detail level" VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="Level" Width="180" HorizontalAlignment="Left" Margin="0,4" SelectionChanged="Level_SelectionChanged">
+                            <ComboBoxItem Content="Easy" /><ComboBoxItem Content="Professional" />
+                        </ComboBox>
+                        <Grid Grid.Row="5" Grid.ColumnSpan="2" x:Name="IdleAfterRow">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="220" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="Idle after (seconds)" VerticalAlignment="Center" />
+                            <ui:NumberBox Grid.Column="1" x:Name="IdleAfter" Minimum="10" Maximum="3600" SpinButtonPlacementMode="Inline" Width="180" HorizontalAlignment="Left" Margin="0,4" ClearButtonEnabled="False" />
+                        </Grid>
+                        <Grid Grid.Row="6" Grid.ColumnSpan="2" x:Name="ShowForegroundRow">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="220" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <TextBlock Text="Show foreground app" VerticalAlignment="Center" />
+                            <ui:ToggleSwitch Grid.Column="1" x:Name="ShowForeground" Margin="0,4" OnContent="On" OffContent="Off" />
+                        </Grid>
+                    </Grid>
+                    <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,8,0,0" TextWrapping="Wrap"
+                               Text="Command lines can contain tokens or passwords. Turn this off to store only executable paths." />
+                </StackPanel>
+            </ui:Card>
+
+            <StackPanel Orientation="Horizontal">
+                <ui:Button Appearance="Primary" Content="Apply" Icon="{ui:SymbolIcon CheckmarkCircle24}" Click="Apply_Click" />
+                <ui:Button Margin="8,0,0,0" Content="Reset to defaults" Click="Reset_Click" />
+            </StackPanel>
+        </StackPanel>
+</Page>
